@@ -1,0 +1,46 @@
+# make it explicit that we favor the new container-based travis workers
+sudo: false
+
+language: python
+python:
+  - 2.7
+# Pre-install packages for the ubuntu distribution
+cache:
+  apt: true
+  # We use three different cache directory
+  # to work around a Travis bug with multi-platform cache
+  directories:
+  - $HOME/.cache/pip
+  - $HOME/download
+addons:
+  apt:
+    packages:
+      - libatlas3gf-base
+      - libatlas-dev
+      - gfortran
+      - libgfortran3
+env:
+  global:
+    # Directory where tests are run from
+    - TEST_DIR=/tmp/test_dir
+    - MODULE=imblearn
+    - OMP_NUM_THREADS=4
+    - OPENBLAS_NUM_THREADS=4
+  matrix:
+    # This environment tests the using anaconda
+    - DISTRIB="conda" PYTHON_VERSION="2.7" COVERAGE="true"
+      NUMPY_VERSION="1.9.3" SCIPY_VERSION="0.16.0"
+    - DISTRIB="conda" PYTHON_VERSION="3.5" COVERAGE="true"
+      NUMPY_VERSION="1.10.4" SCIPY_VERSION="0.17.0"
+
+install: source build_tools/travis/install.sh
+script: bash build_tools/travis/test_script.sh
+after_success: source build_tools/travis/after_success.sh
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/188e3c7a5180fd4f2120
+    on_success: always  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: never     # options: [always|never|change] default: always
