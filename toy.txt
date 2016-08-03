@@ -1,0 +1,61 @@
+>>> X = np.array([[110],     # 0
+                  [100],     # 1
+                  [1],       # 2
+                  [2],       # 3
+                  [0],       # 4
+                  [np.nan],  # 5
+                  [500],     # 6
+                  [600],     # 7
+                  [np.nan],  # 8
+                  [5]],      # 9
+                 dtype=np.float32, order='F')
+#                 0  1  2  3  4  5  6  7  8  9
+>>> y = np.array([1, 1, 0, 0, 0, 0, 1, 1, 0, 0])
+>>> dtc = DecisionTreeClassifier(missing_values='NaN')
+>>> dtc.fit(X, y).predict([[np.nan]])
+0
+>>> X = np.array([[110],     # 0
+                  [100],     # 1
+                  [1],       # 2
+                  [2],       # 3
+                  [0],       # 4
+                  [np.nan],  # 5
+                  [500],     # 6
+                  [600],     # 7
+                  [np.nan],  # 8
+                  [5]],      # 9
+                 dtype=np.float32, order='F')
+#                 0  1  2  3  4  5  6  7  8  9
+>>> y = np.array([1, 1, 0, 0, 0, 1, 1, 1, 1, 0])
+>>> dtc = DecisionTreeClassifier(missing_values='NaN')
+>>> dtc.fit(X, y).predict([[np.nan]])
+1
+samples = [1, x, 2, x, 3, x, 4, x]
+                           |
+                           |
+              p = 1        |
+              v            V
+samples = [1, 2, 3, 4, x, x, x, x]
+           ^        ^           ^
+           s      e-n_m-1      e-1
+           |________|
+                |
+         Find the best split pos & missing_direction
+
+Let best.missing_direction = left
+Let best.pos (=p) = 1
+
+best.pos --> best.pos + n_missing
+
+Repartition to 
+                          p = 5
+                          v
+samples = [1, 2, x, x, x, x, 3, 4]
+           s                    e-1
+           |______________|______|
+             left child    r child
+                |             |
+          Push both back to the stack
+
+
+(n_m = n_missing = 4)

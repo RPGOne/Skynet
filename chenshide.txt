@@ -1,0 +1,41 @@
+import numpy as np
+import pandas as pd
+from sklearn import linear_model
+
+test = pd.read_excel('test_tmp.xlsx')
+
+y = test['XT080147.XT']
+del test['XT080147.XT']
+x = test.copy()
+
+def lasso(x,y):
+lasso = linear_model.Lasso(alpha=.3)
+reg = lasso.fit(x,y)
+
+alpha = reg.intercept_
+coef  = reg.coef_
+score = reg.score(x,y)  
+return score, alpha, coef
+reg = lasso(x, y)
+print reg
+
+def lin(x,y):
+lin = linear_model.LinearRegression()
+reg = lin.fit(x, y)
+
+alpha = reg.intercept_
+coef  = reg.coef_
+score = reg.score(x,y)  
+return score, alpha, coef
+reg = lin(x, y)
+print reg
+
+The results are as below:
+
+Lasso's result:
+(0.0, 0.0034525120522560927, array([ 0., -0., 0., 0., 0., 0., 0., -0.]))
+
+OLS's result:
+(0.33163971349137733, 0.0081966436333979712, array([ 0.62884743, -25.57210926, -18.10176681, 29.26061887,
+-0.09660962, 3.76102792, 0.16203974, 3.47666612]))
+chenshideMBP:test chenshi$
